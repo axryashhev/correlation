@@ -15,7 +15,11 @@ namespace Root {
   export type Drawer = {
     ShowData: ContextActionData;
     Setting: undefined;
-    Chart: {position?: PositionScreen};
+    Chart: Partial<{
+      position: PositionScreen;
+      labelResult: string;
+      topFactorResult: string;
+    }>;
     Error: undefined;
     About: undefined;
   };

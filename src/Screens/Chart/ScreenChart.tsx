@@ -89,7 +89,8 @@ const ScreenChart = observer(({navigation}: ScreenChartProps) => {
   const [correlationChartData, setCorrelationChartData] = useState<
     ScatterData | LineData | BubbleData | undefined
   >();
-  const [labelResult, setLabelResult] = useState<string | undefined>();
+  // const [labelResult, setLabelResult] = useState<string | undefined>();
+  // const [topFactorResult, setTopFactorResult] = useState<string | undefined>();
 
   const updateCorrelation = useCallback(
     (value: Array<ValueViewDataExcel>) => {
@@ -104,15 +105,17 @@ const ScreenChart = observer(({navigation}: ScreenChartProps) => {
       const correlation =
         typeof result === 'string' ? parseFloat(result) : result;
 
-      setLabelResult(
-        `Поле [${getLabel(value[0])}] ${
+      // setLabelResult();
+
+      navigation.setParams({
+        labelResult: `Поле [${getLabel(value[0])}] ${
           correlation < 0 ? 'обратно-' : 'прямо-'
         }пропорциональна полю [${getLabel(value[1])}]`,
-      );
+      });
 
       setResultCorrelation(correlation);
     },
-    [jsonData],
+    [jsonData, navigation],
   );
 
   const updateDataSets = useCallback(
@@ -205,19 +208,46 @@ const ScreenChart = observer(({navigation}: ScreenChartProps) => {
     });
   };
 
-  // useEffect(() => {
-  //   if (!jsonData || !topFactor) {
-  //     return;
-  //   }
-  //
-  //   const numbersJSONData$ = of(
-  //     getNumbersJSONData(jsonData, subjectErrorData$.current),
-  //   );
-  //
-  //   numbersJSONData$.pipe(map(it => Object.keys(it).find(item => it === to)))
-  //
-  //
-  // }, [jsonData, topFactor]);
+  useEffect(() => {
+    if (jsonData === undefined || topFactor === undefined) {
+      return;
+    }
+
+    const numbersJSONData = getNumbersJSONData(
+      jsonData,
+      subjectErrorData$.current,
+    );
+
+    const xValue = convertArrayStringToArrayInt(
+      numbersJSONData[topFactor].data,
+    );
+
+    const data = Object.entries(numbersJSONData).reduce(
+      (acc: Array<{name: string; value: number}>, [key, value]) => {
+        if (key === topFactor) {
+          return acc;
+        }
+        const y = convertArrayStringToArrayInt(value.data);
+
+        const result = UtilCorrelation.correlation(xValue, y);
+
+        const correlation =
+          typeof result === 'string' ? parseFloat(result) : result;
+        acc.push({name: key, value: correlation});
+        return acc;
+      },
+      [],
+    );
+
+    const test = data.sort((a, b) => a.value - b.value).reverse();
+
+    navigation.setParams({
+      topFactorResult: `Наиболее влиятельными факторами являются: ${test
+        .filter(it => it.value >= 0)
+        .map(it => it.name)
+        .join(', ')}`,
+    });
+  }, [jsonData, navigation, topFactor]);
 
   useEffect(() => {
     const subscription$ = subjectDetectOrientation$.current.subscribe(pos => {
@@ -347,16 +377,28 @@ const ScreenChart = observer(({navigation}: ScreenChartProps) => {
         </ViewShot>
       </View>
       <ViewVisible condition={positionScreen === PositionScreen.Portrait}>
-        <ViewVisible condition={labelResult !== undefined}>
-          <Text
-            style={{
-              marginHorizontal: 2,
-              textAlign: 'center',
-              color: renderColorCorrelation,
-            }}>
-            {labelResult}
-          </Text>
-        </ViewVisible>
+        {/*<ViewVisible condition={labelResult !== undefined}>*/}
+        {/*  <Text*/}
+        {/*    style={{*/}
+        {/*      marginHorizontal: 2,*/}
+        {/*      textAlign: 'center',*/}
+        {/*      color: renderColorCorrelation,*/}
+        {/*    }}>*/}
+        {/*    {labelResult}*/}
+        {/*  </Text>*/}
+        {/*  <ViewVisible*/}
+        {/*    condition={*/}
+        {/*      topFactorResult !== undefined && topFactor !== undefined*/}
+        {/*    }>*/}
+        {/*    <Text*/}
+        {/*      style={{*/}
+        {/*        marginHorizontal: 2,*/}
+        {/*        textAlign: 'center',*/}
+        {/*      }}>*/}
+        {/*      {topFactorResult}*/}
+        {/*    </Text>*/}
+        {/*  </ViewVisible>*/}
+        {/*</ViewVisible>*/}
         <Button
           title={'Сохранить'}
           style={{marginBottom: 16, width: '80%'}}

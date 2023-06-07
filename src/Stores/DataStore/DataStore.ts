@@ -37,11 +37,7 @@ class DataStore {
 
     autorun(() => {
       const data = JSON.stringify(
-        checkKeyof(this, [
-          'typeChartData',
-          'typeChartCorrelation',
-          'topFactor',
-        ]),
+        checkKeyof(this, ['typeChartData', 'typeChartCorrelation']),
       );
       storage.set(DataStore.TAG, data);
     });

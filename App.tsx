@@ -11,7 +11,6 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {useDataStore} from './src/Stores/DataStore/DataStore';
 import storage, {KeyStorage} from './src/Storage/storage';
 import ScreenErrorLog from './src/Screens/ErrorLog/ScreenErrorLog';
-import ExampleThree from './src/Screens/Test/ExampleThree';
 
 const Stack = createNativeStackNavigator<Root.Stack>();
 

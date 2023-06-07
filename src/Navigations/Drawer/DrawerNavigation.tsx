@@ -5,11 +5,13 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Root from '../Root/Root';
 import ScreenSetting from '../../Screens/StackScreen/Setting/ScreenSetting';
 import ScreenChart from '../../Screens/Chart/ScreenChart';
+import {Icon} from '@rneui/themed';
 import UtilApp from '../../Util/UtilApp';
 
 import PositionScreen = UtilApp.PositionScreen;
 import ScreenErrorLog from '../../Screens/ErrorLog/ScreenErrorLog';
 import ScreenAbout from '../../Screens/About/ScreenAbout';
+import {Alert} from 'react-native';
 
 const Drawer = createDrawerNavigator<Root.Drawer>();
 
@@ -37,6 +39,26 @@ const DrawerNavigation = ({route}: DrawerNavigationProps) => (
       options={({route: routeChart}) => ({
         title: 'Анализ данных',
         headerShown: routeChart.params.position === PositionScreen.Portrait,
+        headerRight: () => (
+          <Icon
+            color="#007FFF"
+            name="devices"
+            size={24}
+            type="material"
+            style={{marginRight: 12, marginTop: 5}}
+            onPress={() => {
+              Alert.alert(
+                '',
+                [
+                  routeChart.params.labelResult,
+                  routeChart.params.topFactorResult,
+                ]
+                  .filter(it => it !== undefined)
+                  .join('\n'),
+              );
+            }}
+          />
+        ),
       })}
     />
     <Drawer.Screen
