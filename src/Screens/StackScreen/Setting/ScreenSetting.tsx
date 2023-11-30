@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {Platform, StyleSheet, Text} from 'react-native';
 
 import {Dropdown} from 'react-native-element-dropdown';
@@ -101,6 +101,7 @@ const ScreenSetting = observer(() => {
       </Text>
       <Dropdown
         placeholder={'Выберите топ фактор'}
+        placeholderStyle={{color: 'black'}}
         data={choiceTop}
         labelField={'label'}
         valueField={'value'}
